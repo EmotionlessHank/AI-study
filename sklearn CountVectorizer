@@ -1,0 +1,165 @@
+CountVectorizer: 
+
+　　CountVectorizer可以将文本文档集合转换为token计数矩阵。(token可以理解成词)
+　　此实现通过使用scipy.sparse.csr_matrix产生了计数的稀疏表示。
+　　如果不提供一个先验字典，并且不使用进行某种特征选择的分析器，那么特征的数量将与通过分析数据得到的词汇表的大小一致。
+　　参数:
+　　input：
+
+　　　　默认content 可选 filename、file、content
+　　　　如果是filename，传给fit的参数必须是文件名列表
+　　　　如果是file，传给fit的参数必须是文件对象，有read方法
+　　　　如果是content，这是字符串序列或者是字节序列
+　　encoding:
+
+　　　　默认是utf-8。如果需要分析的文本是bytes 字节码 或者是 文件(文件列表),就使用这个encoding参数来对文件或者bytes进行解码。
+　　decode_error:
+　　　　默认是strict。当用来分析的字节序列中包含encoding指定的编码集中没有的字符时的指令。strict的意思是直接报错UnicodeDecodeError。ignore是忽视。replace是替换。
+　　strip_accents:
+　　　　默认是None。在文本预处理的过程去除掉重音(音调). ascii方法较快，仅作用于ASCII码。unicode码稍慢，适合任意字符。None就是不做这个操作。
+　　analyzer:
+　　　　默认是word。一般使用默认，可设置为string类型，如'word', 'char', 'char_wb'，还可设置为callable类型，比如函数是一个callable类型
+　　preprocessor: 默认是None，可传入callable
+　　　　重写预处理（字符串转换）阶段，同时保留标记化和N-gram生成步骤
+　　tokenizer:
+　　　　在保留预处理和N-gram生成步骤的同时重写字符串标记化步骤。仅适用于anlayzer = "word".
+　　ngram_range：tuple (min_n, max_n) 默认 (1, 1)
+　　　　N值的范围的下界和上界用于提取不同的N-gram。n的所有值都将使用Min n＝n<＝Max n。
+　　stop_words : string {‘english’}, list, or None (default)
+　　　　english表示使用内置的英语单词停用表
+　　　　如果是list列表，该列表中的词会作为停止词。仅适用于analyzer=word。
+　　　　如果是None，就不会使用停止词。max_df参数可以被设置在(0.7, 1.0）的范围内，用来基于语料库内文档中术语的频率来自动检测和过滤停止词。
+　　lowercase: 默认是True，将文本转换为小写。
+　　token_pattern: 默认r"(?u)\b\w\w+\b"
+　　　　使用正则表达式表示什么样的形式才是一个token，只有当analyzer=word是才有用。默认的正则表达式是至少2个或者更多的字母。标点符号被完全忽略或者只是作为分隔符。
+
+　　max_df: 默认是1 [0， 1]之间的小数或者是整数。
+　　　　当构建词汇表时，忽略那些文档频率严格高于给定阈值的术语（特定于语料库的停止词）。如果是浮点数，参数表示一个文件的比例。如果是整数，表示术语的绝对计数。如果vocabulary不是None，则忽略此参数。
+　　min_df: 与max_df类似。 默认是1.
+　　max_features: 默认是None， None或者是整数。
+　　　　如果不是None，表示建立一个只考虑最前面的max_features个术语来表示语料库。如果vocabulary参数不是None的话，忽略这个参数。
+　　vocabulary: 默认是None。Mapping或者Iterable
+　　　　无论是Mapping还是字典，items是key， 索引是value，都是特征矩阵中的索引，或者是可迭代的terms。如果没有给出，则从输入文档中确定词汇表。映射中的索引不应该重复，并且不应该在0和最大索引之间有任何间隙。
+　　binary:
+　　　　如果为真，则所有非零计数设置为1。这对于模拟二进制事件而不是整数计数的离散概率模型是有用的。
+　　dtype :
+　　　　fit_transform或者transform返回的matrix的类型。
+
+　　属性:
+　　　　vocabulary_: 词和词在向量化后的计数矩阵中列索引的映射关系。
+　　　　stop_words_: 停止词集合。
+
+　　方法:
+　　　　build_analyzer：
+　　　　　　返回一个进行预处理和分词的分析器函数对象。
+　　　　build_preprocessor:
+　　　　　　返回一个在分词之前进行预处理的可调用方法。
+　　　　build_tokenizer:
+　　　　　　返回一个将字符串分为词语序列的方法
+　　　　decode:
+　　　　　　将输入转换为unicode字符表示
+　　　　　　解码的策略参照vectorizer的参数。
+　　　　fit（raw_documents, y=None）：
+　　　　　　学习出一个词汇字典。这个词汇字典的格式是{word， word在向量矩阵中的列的索引}
+　　　　　　raw_documents是string，unicode，file对象构成的可迭代对象。
+　　　　fit_transform：
+　　　　　　学习词汇字典并转换为矩阵。等同于先调用fit，再调用transform，不过更有效率。
+　　　　　　返回向量矩阵。[n_samples, n_features]。行表示文档，列表示特征。
+　　　　get_feature_names:
+　　　　　　特征名称列表
+　　　　get_params:
+　　　　　　获得向量器的参数。
+　　　　get_stop_words:
+　　　　　　获取stopword列表
+　　　　inverse_transform(X):
+　　　　　　返回每个文档中数量不是0的词语
+　　　　　　返回结果是array组成的列表
+　　　　set_params:
+　　　　　　设置估计器参数
+　　　　transform(raw_documents):
+　　　　　　将文档转换成词汇计数矩阵。使用fit拟合的词汇表或者提供给构造函数的词汇表来提取传入文档的词语计数。
+
+　　CountVectorizer处理文本的步骤应该是先使用 preprocessor参数提供预处理器，对文本进行预处理。在使用tokenizer对文本进行拆分。再使用fit拟合得到词汇表，再使用transform转换为计数矩阵。
+
+
+def count_vectorizer_example():
+    from sklearn.feature_extraction.text import CountVectorizer
+    vectorizer = CountVectorizer()
+    corpus = [
+        'This is the first document.',
+        'This is the second second document.',
+        'And the third one.',
+        'Is this the first document?',
+    ]
+    X = vectorizer.fit_transform(corpus)
+    feature_names = vectorizer.get_feature_names()
+    # 会产生一个矩阵，行表示文章，列表是词汇，列的数字表示词汇的数量
+    array = X.toarray()
+    # 得到document词所在的列的索引
+    document_count = vectorizer.vocabulary_.get("document")
+    # 在训练语料库中未出现的词，会被完全忽略
+    test = vectorizer.transform(["Something completely new."]).toarray()
+    # 除了提取1-grams词 而且提取2-grams词。这样是为了防止词组顺序颠倒。
+    bigram_vectorizer = CountVectorizer(ngram_range=(1, 2),
+                                        stop_words=['AAAAAA'],
+                                        token_pattern=r"\b\w+\b", min_df=1)
+    analyze = bigram_vectorizer.build_analyzer()
+    print(analyze("Bi-grams are cool!"))
+    # 构建的向量矩阵会变得更大
+    X_2 = bigram_vectorizer.fit_transform(corpus).toarray()
+    # is this这样的疑问形式也会出现在向量中
+    feature_index = bigram_vectorizer.vocabulary_.get("is this")
+    print(X_2[:, feature_index])
+ 
+    # ################测试各个函数的功能
+    # build_analyzer: 返回一个进行预处理和分词的调用对象
+    analyzer = bigram_vectorizer.build_analyzer()
+    print(analyzer("This is a test."))
+ 
+    # build_preprocessor: 返回一个进行预处理的调用对象。
+    preprocessor = bigram_vectorizer.build_preprocessor()
+    # 这个预处理对象好像只进行了小写转换
+    print(preprocessor("This is a test."))
+ 
+    # build_tokenizer: 返回一个只对字符串进行分词的可调用方法
+    tokenizer = bigram_vectorizer.build_tokenizer()
+    print(tokenizer("This is a test."))
+ 
+    # decode(doc): 将输入转换为unicode字符表示。解码策略使用vectorizer的参数
+    print(bigram_vectorizer.decode("This is a test.这是一个测试。"))
+ 
+    # fit(raw_documents, y=None): 从传入的raw_documents的所有词汇中学习出一个词汇字典
+    # 这个词汇字典是 {word: word在向量矩阵中的列索引,...}
+    # raw_documents: 字符串、unicode或者file对象构成的可迭代对象
+    # y好像并没有在函数中使用
+    raw_documents = ["This is a test", "Is this a test?"]
+    print(bigram_vectorizer.fit(raw_documents).vocabulary_)
+ 
+    # fit_transform(raw_documents, y=None)
+    # 学习出一个词汇字典，并且返回一个行为文本，列为词汇的矩阵。
+    # 这个函数等价于先调用fit函数，再调用transform函数。但是是更高效的实现。
+    print(bigram_vectorizer.fit_transform(corpus).toarray())
+ 
+    # get_feature_names:返回一个特征名列表，特征的顺序是特征在矩阵中的顺序。
+    print(bigram_vectorizer.get_feature_names())
+ 
+    # get_params: 返回估计器的参数
+    print(bigram_vectorizer.get_params())
+ 
+    # get_stop_words: 返回停止词表
+    print(bigram_vectorizer.get_stop_words())
+ 
+    # inverse_transform(X): 返回每个文档中数量不是0的词语
+    # 返回的是array组成的list。len = n_samples
+    print(bigram_vectorizer.inverse_transform(bigram_vectorizer.fit_transform(corpus).toarray()))
+ 
+    # set_params 设置估计器的参数
+    print(bigram_vectorizer.set_params(stop_words=["2"]).get_stop_words())
+ 
+    # transform(raw_documents): 将文档转换成术语矩阵。
+    # 使用fit拟合的词汇表或提供给构造函数的词汇表提取原始文本文档中的词语计数。
+    print(bigram_vectorizer.transform(corpus).toarray())
+ 
+ 
+if __name__ == "__main__":
+    count_vectorizer_example()
