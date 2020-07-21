@@ -9,3 +9,18 @@ print(string1)
 string2 = re.sub(results, '', string2)
 print(string2)
 
+# 我的做法，sentence是从文件里读出来的一句句话，格式是str
+# remove the url and invalid char in sentence
+def data_preprocessing(sentence):
+    # use regular expression to express the format of url
+    url_format = re.compile(r'[http|https]*://[a-zA-Z0-9.?/&=:]*')
+    # same, use regular expression to express the invalid char
+    invalid_char = r'[^#@_$%\s\w\d]'
+    result = []
+    for i in sentence:
+        # replace the url as space
+        remove_url_format = re.sub(url_format, ' ', i)
+        # remove the invalid chars
+        # remove_invalid_char = re.sub(invalid_char, '', remove_url_format)
+        result.append(remove_url_format)
+    return result
